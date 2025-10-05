@@ -133,6 +133,87 @@ export default function Home() {
 						</div>
 					</div>
 
+					{/* Prefetch Demo */}
+					<div className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
+						<h3 className="font-bold text-gray-900 mb-3 text-lg">
+							🚀 Smart Prefetching (Built-in!)
+						</h3>
+						<p className="text-sm text-gray-600 mb-4">
+							React Router 7 prefetches routes automatically. Hover over these
+							links and watch the Network tab!
+						</p>
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+							{/* Default: intent (hover/focus) */}
+							<Link
+								to="/pokemon/pikachu"
+								className="bg-white hover:bg-green-50 border-2 border-green-300 rounded-lg p-3 text-center transition-all hover:shadow-md"
+							>
+								<div className="text-2xl mb-1">⚡</div>
+								<div className="text-xs font-semibold text-gray-700">
+									Pikachu
+								</div>
+								<div className="text-xs text-green-600 mt-1">
+									prefetch: default
+								</div>
+							</Link>
+
+							{/* Explicit intent */}
+							<Link
+								to="/pokemon/charizard"
+								prefetch="intent"
+								className="bg-white hover:bg-green-50 border-2 border-green-300 rounded-lg p-3 text-center transition-all hover:shadow-md"
+							>
+								<div className="text-2xl mb-1">🔥</div>
+								<div className="text-xs font-semibold text-gray-700">
+									Charizard
+								</div>
+								<div className="text-xs text-green-600 mt-1">
+									prefetch: intent
+								</div>
+							</Link>
+
+							{/* No prefetch */}
+							<Link
+								to="/pokemon/bulbasaur"
+								prefetch="none"
+								className="bg-white hover:bg-gray-50 border-2 border-gray-300 rounded-lg p-3 text-center transition-all hover:shadow-md"
+							>
+								<div className="text-2xl mb-1">🌱</div>
+								<div className="text-xs font-semibold text-gray-700">
+									Bulbasaur
+								</div>
+								<div className="text-xs text-red-600 mt-1">prefetch: none</div>
+							</Link>
+
+							{/* Render (prefetch when rendered) */}
+							<Link
+								to="/pokemon/squirtle"
+								prefetch="render"
+								className="bg-white hover:bg-green-50 border-2 border-blue-300 rounded-lg p-3 text-center transition-all hover:shadow-md"
+							>
+								<div className="text-2xl mb-1">💧</div>
+								<div className="text-xs font-semibold text-gray-700">
+									Squirtle
+								</div>
+								<div className="text-xs text-blue-600 mt-1">
+									prefetch: render
+								</div>
+							</Link>
+						</div>
+						<p className="text-xs text-gray-500 mt-4">
+							💡 <strong>intent</strong> (default): Prefetches on hover/focus •{" "}
+							<strong>render</strong>: Prefetches immediately •{" "}
+							<strong>none</strong>: No prefetch
+						</p>
+						<div className="mt-3 bg-yellow-50 border border-yellow-200 rounded p-3">
+							<p className="text-xs text-gray-700">
+								<strong>Test it:</strong> Hover Pikachu for 2sec → watch
+								terminal → click → navigation is INSTANT (no loading)! Loaders
+								re-run for fresh data, but the UI transition is smooth.
+							</p>
+						</div>
+					</div>
+
 					{/* Call to Action */}
 					<div className="mt-8 text-center">
 						<Link
@@ -142,7 +223,7 @@ export default function Home() {
 							Start Exploring →
 						</Link>
 						<p className="text-sm text-gray-500 mt-4">
-							💡 Check your browser console for timing logs!
+							💡 Check your browser console & Network tab for timing logs!
 						</p>
 					</div>
 				</div>
