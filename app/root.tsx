@@ -1,10 +1,12 @@
 import {
 	isRouteErrorResponse,
+	Link,
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLocation,
 } from "react-router"
 
 import type { Route } from "./+types/root"
@@ -42,7 +44,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	return <Outlet />
+	const location = useLocation()
+	const isHomePage = location.pathname === "/"
+
+	return (
+		<>
+			{!isHomePage && (
+				<div className="fixed top-4 left-4 z-50">
+					<Link
+						to="/"
+						className="bg-white hover:bg-gray-100 text-gray-900 px-4 py-2 rounded-lg shadow-lg transition-colors font-medium flex items-center gap-2"
+					>
+						← Home
+					</Link>
+				</div>
+			)}
+			<Outlet />
+		</>
+	)
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
