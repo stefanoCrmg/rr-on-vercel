@@ -4,8 +4,7 @@ import { Suspense } from "react"
 import { Await, Link, useLoaderData } from "react-router"
 import {
 	capitalizeName,
-	extractIdFromUrl,
-	fetchEvolutionChain,
+	fetchEvolutionChainForPokemon,
 	fetchPokemon,
 	fetchPokemonSpecies,
 } from "../api/pokemon-service"
@@ -14,6 +13,15 @@ import type { Route } from "./+types/streaming.$name"
 
 // Helper function to add artificial delay (to make streaming obvious)
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Helper to flatten evolution chain into array of names
+function flattenEvolutionChain(chain: ChainLink): string[] {
+	const names: string[] = [chain.species.name]
+	for (const evolution of chain.evolves_to) {
+		names.push(...flattenEvolutionChain(evolution))
+	}
+	return names
+}
 
 // STREAMING LOADER - React Router 7 pattern
 // Just return promises directly (without defer)! React Router handles the rest.
@@ -38,26 +46,20 @@ export async function loader({ params }: Route.LoaderArgs) {
 		`\x1b[2m[${new Date().toLocaleTimeString("en-US", { hour12: false })}]\x1b[0m \x1b[36m\x1b[1m⚡ STREAMING LOADER RETURNED (${duration}ms)\x1b[0m \x1b[36m- Page renders NOW! Promised data will stream in...\x1b[0m`,
 	)
 
+	// Fetch species and evolution (awaited - available immediately)
+	const species = await fetchPokemonSpecies(name)
+	const evolution = await fetchEvolutionChainForPokemon(name)
+
 	return {
 		// Available immediately
 		pokemon,
+		evolution,
 
-		// Streamed: will load in background with artificial delays
-		// These are PROMISES, not awaited values!
-		species: fetchPokemonSpecies(name).then(async (data) => {
-			await delay(2000) // Artificial 2s delay to see skeleton
-			console.log(`\x1b[32m✅ Species data streamed in!\x1b[0m`)
-			return data
-		}),
-
-		// Streamed: even slower
-		evolution: (async () => {
-			const species = await fetchPokemonSpecies(name)
-			const evolutionChainId = extractIdFromUrl(species.evolution_chain.url)
-			await delay(3000) // Artificial 3s delay
-			const evo = await fetchEvolutionChain(evolutionChainId)
-			console.log(`\x1b[32m✅ Evolution data streamed in!\x1b[0m`)
-			return evo
+		// Only species description streams in with artificial delay
+		speciesDescription: (async () => {
+			await delay(2000) // Artificial delay to see skeleton
+			console.log(`\x1b[32m✅ Species description streamed in!\x1b[0m`)
+			return species
 		})(),
 	}
 }
@@ -186,7 +188,8 @@ function EvolutionSection({ evolution }: { evolution: EvolutionChain }) {
 }
 
 export default function StreamingDemo() {
-	const { pokemon, species, evolution } = useLoaderData<typeof loader>()
+	const { pokemon, speciesDescription, evolution } =
+		useLoaderData<typeof loader>()
 
 	const sprite =
 		pokemon.sprites.other?.["official-artwork"]?.front_default ||
@@ -287,11 +290,14 @@ export default function StreamingDemo() {
 								</p>
 							</div>
 
-							{/* Right Column - Streamed progressively */}
+							{/* Right Column - Partially streamed */}
 							<div>
-								{/* Species data - Deferred with Suspense */}
-								<Suspense fallback={<DescriptionSkeleton />}>
-									<Await resolve={species}>
+								{/* Species description - Streams in with artificial delay */}
+								<Suspense
+									key={`species-${pokemon.name}`}
+									fallback={<DescriptionSkeleton />}
+								>
+									<Await resolve={speciesDescription}>
 										{(speciesData) => <SpeciesSection species={speciesData} />}
 									</Await>
 								</Suspense>
@@ -336,14 +342,8 @@ export default function StreamingDemo() {
 									</p>
 								</div>
 
-								{/* Evolution - Deferred with Suspense */}
-								<Suspense fallback={<EvolutionSkeleton />}>
-									<Await resolve={evolution}>
-										{(evolutionData) => (
-											<EvolutionSection evolution={evolutionData} />
-										)}
-									</Await>
-								</Suspense>
+								{/* Evolution - Available immediately */}
+								<EvolutionSection evolution={evolution} />
 							</div>
 						</div>
 					</div>

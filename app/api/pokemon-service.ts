@@ -205,3 +205,27 @@ export async function getPokemonId(name: string): Promise<number> {
 	const pokemon = await fetchPokemon(name)
 	return pokemon.id
 }
+
+/**
+ * Fetch evolution chain for a specific Pokemon by name
+ * This is a convenience function that fetches the species first to get the chain ID
+ */
+export async function fetchEvolutionChainForPokemon(
+	nameOrId: string | number,
+): Promise<EvolutionChain> {
+	const startTime = logStart("fetchEvolutionChainForPokemon", nameOrId)
+
+	try {
+		// First fetch species to get evolution chain URL
+		const species = await fetchPokemonSpecies(nameOrId)
+		const chainId = extractIdFromUrl(species.evolution_chain.url)
+
+		// Then fetch the evolution chain
+		const chain = await fetchEvolutionChain(chainId)
+		logFinish("fetchEvolutionChainForPokemon", startTime)
+		return chain
+	} catch (error) {
+		logError("fetchEvolutionChainForPokemon", error, startTime)
+		throw error
+	}
+}
