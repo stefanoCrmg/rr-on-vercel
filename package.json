@@ -12,6 +12,7 @@
 		"@react-router/express": "^7.9.4",
 		"@react-router/node": "^7.9.2",
 		"@react-router/serve": "^7.9.2",
+		"@vercel/react-router": "^1.2.3",
 		"compression": "^1.8.1",
 		"express": "^5.1.0",
 		"isbot": "^5.1.31",
@@ -29,7 +30,7 @@
 		"@types/react-dom": "^19.1.9",
 		"tailwindcss": "^4.1.13",
 		"typescript": "^5.9.2",
-		"vite": "^7.1.7",
+		"vite": "link:@vercel/react-router/vite",
 		"vite-tsconfig-paths": "^5.1.4"
 	}
 }
