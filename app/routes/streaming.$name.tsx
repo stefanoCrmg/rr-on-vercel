@@ -47,7 +47,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 	)
 
 	// Fetch species and evolution (awaited - available immediately)
-	const species = await fetchPokemonSpecies(name)
+	// const species = fetchPokemonSpecies(name)
 	const evolution = await fetchEvolutionChainForPokemon(name)
 
 	return {
@@ -56,11 +56,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 		evolution,
 
 		// Only species description streams in with artificial delay
-		speciesDescription: (async () => {
-			await delay(2000) // Artificial delay to see skeleton
-			console.log(`\x1b[32m✅ Species description streamed in!\x1b[0m`)
-			return species
-		})(),
+		speciesDescription: fetchPokemonSpecies(name),
 	}
 }
 
@@ -226,6 +222,14 @@ export default function StreamingDemo() {
 							rendered IMMEDIATELY with basic Pokemon data, and the description
 							and evolution chain are streaming in progressively!
 						</p>
+						<button
+							type="button"
+							onClick={() => console.log("clicked")}
+							className="bg-red-600 text-white px-4 py-2 rounded-md"
+						>
+							{" "}
+							Just testing interactivity
+						</button>
 						<p className="text-cyan-100 mt-2 text-sm">
 							👀 Watch the console and see the skeletons turn into real content
 							as data streams in!

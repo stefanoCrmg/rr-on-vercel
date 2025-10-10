@@ -13,6 +13,7 @@ export default [
 	layout("routes/pokemon.tsx", [
 		route("pokemon", "routes/pokemon._index.tsx"),
 		route("pokemon/:name", "routes/pokemon.$name.tsx"),
+		route("testing-actions", "routes/testing-actions.tsx"),
 	]),
 
 	// Streaming demo (defer + Suspense)

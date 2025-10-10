@@ -46,6 +46,13 @@ function logError(fnName: string, error: unknown, startTime: number) {
 }
 
 /**
+ * Helper function to add artificial delay (for demo purposes)
+ */
+function delay(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
  * Fetch a paginated list of Pokemon
  * @param limit - Number of Pokemon to fetch (default: 20)
  * @param offset - Offset for pagination (default: 0)
@@ -126,6 +133,10 @@ export async function fetchPokemonSpecies(
 		}
 
 		const data = (await response.json()) as PokemonSpecies
+
+		// Add 2 second artificial delay
+		await delay(2000)
+
 		logFinish("fetchPokemonSpecies", startTime)
 		return data
 	} catch (error) {
